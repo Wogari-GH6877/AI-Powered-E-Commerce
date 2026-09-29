@@ -3,10 +3,12 @@ import { ShopContext } from '../Context/ShopContext'
 import ProductItem from '../Components/ProductItem';
 import Title from '../Components/Title';
 import { assets } from '../assets/frontend_assets/assets';
+import { ProductContext } from '../Context/ProductContext';
 
 const Collection=() =>{
 
-  const {products,currency}=useContext(ShopContext);
+  const {search,showSearch}=useContext(ShopContext);
+  const {products}=useContext(ProductContext)
   const [showfilter,setShowFilter]=useState(false);
   const [filteredProduct,setFilteredProduct]=useState([]);
   const [category,setCategory]=useState([])
@@ -33,7 +35,11 @@ const Collection=() =>{
 
   const applyFilter=()=>{
 
-    let copyProducts=products;
+    let copyProducts=[...products];
+
+    if(search && showSearch){
+      copyProducts=copyProducts.filter(item=> item.name.toLowerCase().includes(search.toLowerCase()))
+    }
 
     if(category.length>0){
       copyProducts=copyProducts.filter(item =>category.includes(item.category))
@@ -52,16 +58,13 @@ const Collection=() =>{
     setFilteredProduct(copyProducts)
   }
 
-  // useEffect(()=>(
-  //   //  setFilteredProduct(products)
-  //   applyFilter()
-  // ),[]);
+  
 
   
   useEffect(()=>{
     applyFilter()
 
-  },[category,subCategory,products,sortType])
+  },[category,subCategory,products,sortType,search,])
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t'>
@@ -140,7 +143,7 @@ const Collection=() =>{
           <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6'>
           {
             filteredProduct.map((items,index)=>(
-              <ProductItem key={index} name={items.name} price={items.price} image={items.image} id={items._id}/>
+              <ProductItem key={index} name={items.name} price={items.price} image={items.images} id={items._id}/>
             ))
           }
         </div>

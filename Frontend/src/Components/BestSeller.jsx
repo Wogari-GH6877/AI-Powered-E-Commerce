@@ -3,15 +3,21 @@ import Title from './Title'
 import { useState } from 'react'
 import { ShopContext } from '../Context/ShopContext'
 import ProductItem from './ProductItem'
+import { ProductContext } from '../Context/ProductContext'
 function BestSeller() {
 
-    const [BestSeller,setBestSeller]=useState([])
-    const{currency,products}=useContext(ShopContext)
+    const [bestSeller,setBestSeller]=useState([])
+    // const{currency}=useContext(ShopContext);
+    const {products}=useContext(ProductContext);
+        // console.log(products)
+
 
     useEffect(()=>{
       setBestSeller(products.filter(items=> items.bestseller===true).slice(0,5))
         
-    },[])
+    },[products]);
+    console.log(bestSeller);
+    // console.log(products)
     
   return (
     <div className='my-8'>
@@ -23,7 +29,7 @@ function BestSeller() {
 
             <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6 mt-6' >
                 {
-                    BestSeller.map((items,index)=>(
+                    bestSeller.map((items,index)=>(
                         <ProductItem key={index} id={items._id} name={items.name} price={items.price} image={items.images}/>
                     ))
                 }

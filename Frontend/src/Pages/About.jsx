@@ -5,7 +5,7 @@ import NewsLetterBox from '../Components/NewsLetterBox';
 
 export default function About() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-12 font-sans bg-white text-gray-800">
+    <div className="max-w-7xl mx-auto px-4 py-12 font-sans bg-white text-gray-800">
       
       {/* --- ABOUT US TOP SECTION --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-start mb-20">
@@ -14,7 +14,7 @@ export default function About() {
         <div className="w-full">
           <img 
           src={assets.about_img}
-            alt="About Forever apparel setup" 
+            alt="About Wak-E-Commerce apparel setup" 
             className="w-full h-auto object-cover"
           />
         </div>
@@ -29,7 +29,7 @@ export default function About() {
           </div>
 
           <p>
-            Forever Was Born Out Of A Passion For Innovation And A Desire To Revolutionize The Way 
+            Wak-e-commerce Was Born Out Of A Passion For Innovation And A Desire To Revolutionize The Way 
             People Shop Online. Our Journey Began With A Simple Idea: To Provide A Platform Where 
             Customers Can Easily Discover, Explore, And Purchase A Wide Range Of Products From 
             The Comfort Of Their Homes.
@@ -54,7 +54,7 @@ export default function About() {
       </div>
 
       {/* --- WHY CHOOSE US BOTTOM SECTION --- */}
-      <div className="space-y-6 mb-10">
+      <div className="space-y-6 mb-10 w-full ">
         {/* Section Title Header with Line Accent */}
 
         <div className='text-2xl'>

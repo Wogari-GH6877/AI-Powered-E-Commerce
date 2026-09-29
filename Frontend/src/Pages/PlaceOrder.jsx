@@ -1,12 +1,19 @@
 import React, { useState,useContext } from 'react';
 import Title from '../Components/Title';
 import { ShopContext } from '../Context/ShopContext';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../Context/AuthContext';
+import { CartContext } from '../Context/CartContext';
+import { paymentServices } from '../Services/paymentServices';
+import { data } from 'react-router-dom';
 
 export default function PlaceOrder() {
-  const [paymentMethod, setPaymentMethod] = useState('cod');
-  const {navigate,backendUrl,token,cartItems,setCartItems,getCartAmount,delivery_fee,products}=useContext(ShopContext);
+  const [paymentMethod, setPaymentMethod] = useState('chapa');
+  const { navigate, delivery_fee } = useContext(ShopContext);
+  const { token } = useContext(AuthContext);
+  const { getCartAmount } = useContext(CartContext);
+
+
   const [formData,setFormData]=useState({
 
     firstName: "",
@@ -27,64 +34,39 @@ export default function PlaceOrder() {
     setFormData(data=>({...data,[name]:value}))
   }
 
-  const onSubmitHandler=async(event)=>{
-
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
+    if (!token) {
+      toast.error('Please log in before placing an order');
+      navigate('/login');
+      return;
+    }
+
     try {
-      let orderItems=[]
-
-      for (const items in cartItems){
-        for(const item in cartItems[items]){
-          if(cartItems[items][item]>0){
-            const itemInfo=structuredClone(products.find(product=> product._id===items))
-            if(itemInfo){
-              itemInfo.quantity=cartItems[items][item]
-              orderItems.push(itemInfo)
-            }
-
-          }
-        }
-
+      if (paymentMethod !== 'chapa') {
+        toast.info(`${paymentMethod} payment will be integrated later`);
+        return;
       }
+      const response = await paymentServices.createPayment(formData);
+      // console.log(response)
+      // const checkoutUrl = response.data.checkoutUrl;
+            const checkoutUrl = response?.data?.checkoutUrl;
 
-      let orderData={
-        address:formData,
-        items:orderItems,
-        amount:getCartAmount() + delivery_fee
-      }
-      switch(paymentMethod){
+console.log("Checkout URL:", checkoutUrl);
 
-        case 'cod':
-            const response=axios.post(backendUrl + "/api/order/place",orderData,{
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-        
-  console.log(response)
-        if( response.data.success){
-          setCartItems({})
-          navigate("/order")
-        }else{
-          toast.error(
-            response.data.message
-          )
-        }
-
-          break;
-         default:
-           break;
-    }
-
-    }catch (error) {
-  console.log(error);
-
-  toast.error(
-    error.response?.data?.message || error.message
-  );
+if (!response?.data?.success || !checkoutUrl) {
+    toast.error(
+        response?.data?.message || "Unable to start Chapa payment"
+    );
+    return;
 }
 
-  }
+window.location.assign(checkoutUrl);
+    } catch (error) {
+      console.error('Chapa payment creation failed:', error.response?.data || error);
+      toast.error(error.response?.data?.message || error.message || 'Unable to start payment');
+    }
+  };
 
   return (
     <form  onSubmit={onSubmitHandler}className="max-w-6xl mx-auto p-6 font-sans text-gray-800 min-h-screen bg-white">
@@ -169,7 +151,9 @@ export default function PlaceOrder() {
             required
             onChange={onChangeHandler} name="phone" value={formData.phone}
               type="tel"
-              placeholder="Phone"
+              placeholder="Phone (e.g. 0912345678)"
+              pattern="(?:\+?251|0)?[79][0-9]{8}"
+              title="Enter an Ethiopian mobile number, for example 0912345678"
               className="w-full px-3 py-2 border border-gray-400 rounded text-sm placeholder-gray-400 outline-none focus:border-gray-400"
             />
           </div>
@@ -189,15 +173,15 @@ export default function PlaceOrder() {
             <div className="text-sm divide-y divide-gray-100 border-b border-gray-100 mb-6">
               <div className="flex justify-between py-2.5">
                 <span className="text-gray-500">Subtotal</span>
-                <span className="font-medium text-gray-950">$60.00</span>
+                <span className="font-medium text-gray-950">${getCartAmount().toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-2.5">
                 <span className="text-gray-500">Shipping Free</span>
-                <span className="font-medium text-gray-950">$10</span>
+                <span className="font-medium text-gray-950">${delivery_fee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between py-3 font-bold text-gray-950">
                 <span>Total</span>
-                <span>$70.00</span>
+                <span>${(getCartAmount() + delivery_fee).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -212,42 +196,33 @@ export default function PlaceOrder() {
               
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-8">
-              {/* Stripe option */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
               <div
-                onClick={() => setPaymentMethod('stripe')}
-                className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => setPaymentMethod('chapa')}
+                className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5"
               >
+                <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === 'chapa' ? 'border-emerald-500' : 'border-gray-300'}`}>
+                  {paymentMethod === 'chapa' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
+                </div>
+                <span className="text-green-700 font-bold text-sm tracking-tight">Chapa</span>
+              </div>
+              <div onClick={() => setPaymentMethod('stripe')} className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50">
                 <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === 'stripe' ? 'border-emerald-500' : 'border-gray-300'}`}>
                   {paymentMethod === 'stripe' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
                 </div>
-                <span className="text-blue-600 font-extrabold italic text-sm tracking-tight">stripe</span>
+                <span className="text-blue-600 font-extrabold italic text-sm">Stripe</span>
               </div>
-
-              {/* Razorpay option */}
-              <div
-                onClick={() => setPaymentMethod('razorpay')}
-                className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors"
-              >
+              <div onClick={() => setPaymentMethod('razorpay')} className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50">
                 <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === 'razorpay' ? 'border-emerald-500' : 'border-gray-300'}`}>
                   {paymentMethod === 'razorpay' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
                 </div>
-                <div className="flex items-center text-xs font-black tracking-tighter text-blue-900 italic">
-                  <span className="text-cyan-500 text-sm not-italic mr-0.5">▲</span>Razorpay
-                </div>
+                <span className="text-blue-900 font-bold text-sm">Razorpay</span>
               </div>
-
-              {/* Cash On Delivery option */}
-              <div
-                onClick={() => setPaymentMethod('cod')}
-                className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors"
-              >
+              <div onClick={() => setPaymentMethod('cod')} className="flex items-center gap-3 border border-gray-200 rounded px-3 py-2.5 cursor-pointer hover:bg-gray-50">
                 <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${paymentMethod === 'cod' ? 'border-emerald-500' : 'border-gray-300'}`}>
                   {paymentMethod === 'cod' && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
                 </div>
-                <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase whitespace-nowrap">
-                  CASH ON DELIVERY
-                </span>
+                <span className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">Cash on delivery</span>
               </div>
             </div>
 

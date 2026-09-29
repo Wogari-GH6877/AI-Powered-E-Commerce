@@ -43,14 +43,14 @@ export default function Contact() {
               </div>
               <div className="text-gray-500 font-light space-y-1 pt-2">
                 <p>Tel: (415) 555-0132</p>
-                <p>Email: greatstackdev@gmail.com</p>
+                <p>Email: wak-e-commerce@gmail.com</p>
               </div>
             </div>
 
             {/* Careers Section */}
             <div className="space-y-4 pt-4">
               <h3 className="font-bold text-base tracking-wide text-gray-700 uppercase">
-                Careers at Forever
+                Careers at wak-e-commerce
               </h3>
               <p className="text-gray-500 font-light">
                 Learn more about our teams and job openings.

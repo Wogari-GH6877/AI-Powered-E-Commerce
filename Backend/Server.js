@@ -24,8 +24,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: ["http://localhost:5177","http://localhost:5174","http://localhost:5173",
-        process.env.CLIENT_URL1,process.env.ADMIN_URL1,
-    process.env.CLIENT_URL2,process.env.ADMIN_URL2],
+        
+    process.FRONTEND_URL,process.env.ADMIN_URL],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));

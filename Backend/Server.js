@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: ["http://localhost:5177","http://localhost:5174","http://localhost:5173",
         
-    process.FRONTEND_URL,process.env.ADMIN_URL],
+    process.env.FRONTEND_URL,process.env.ADMIN_URL],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -44,163 +44,163 @@ app.get("/",(req,res)=>{
 
 // integrate payment into our app
 
-app.post("/api/payment",(req,res)=>{
-    const {amount,currency}=req.body;
+// app.post("/api/payment",(req,res)=>{
+//     const {amount,currency}=req.body;
 
-    const txRef=`ORDER-${Date.now()}`
+//     const txRef=`ORDER-${Date.now()}`
 
-    const payment={
-        id:Date.now(),
-        txRef:txRef,
-        amount:amount,
-        currency:currency,
-        status:"panding"
-    }
+//     const payment={
+//         id:Date.now(),
+//         txRef:txRef,
+//         amount:amount,
+//         currency:currency,
+//         status:"panding"
+//     }
 
-    payments.push(payment)
+//     payments.push(payment)
 
-    console.log("Create Payment",payment);
-    console.log(payments)
+//     console.log("Create Payment",payment);
+//     console.log(payments)
 
-    res.status(201).json(payment)
-});
+//     res.status(201).json(payment)
+// });
 
-app.post("/api/payment/:id/pay",(req,res)=>{
-    const paymentId=Number(req.params.id);
-    console.log(paymentId)
+// app.post("/api/payment/:id/pay",(req,res)=>{
+//     const paymentId=Number(req.params.id);
+//     console.log(paymentId)
     
-    const payment=payments.find(payment => payment.id===paymentId);
+//     const payment=payments.find(payment => payment.id===paymentId);
 
-    if(!payment){
-        res.status(400).json({
-            message:"Payment is not done"
-        })
-    }
+//     if(!payment){
+//         res.status(400).json({
+//             message:"Payment is not done"
+//         })
+//     }
 
-    payment.status="paid"
+//     payment.status="paid"
 
-    console.log("Payment is succcesfully",payment);
+//     console.log("Payment is succcesfully",payment);
 
-    // res.json({
-    //     paymentId:paymentId,
-    //     status:"paid",
-    //     message:"successfully"
-    // })
+//     // res.json({
+//     //     paymentId:paymentId,
+//     //     status:"paid",
+//     //     message:"successfully"
+//     // })
 
-    res.json(
-        payment
-    )
-});
-
-
-app.post("/api/fake-provider/pay/:id",(req,res)=>{
-    const paymentId=Number(req.params.id);
-
-    const payment=payments.find(payment=>payment.id===paymentId);
-
-    if(!payment){
-        res.status(404).json({
-         message:"Payment is not found"
-        })
-    }
-
-    payment.status = "paid";
+//     res.json(
+//         payment
+//     )
+// });
 
 
-    res.status(200).json({
-        id:paymentId,
-        amount:payment.amount,
-        currency:payment.currency,
-        status:"success"
-    })
-})
+// app.post("/api/fake-provider/pay/:id",(req,res)=>{
+//     const paymentId=Number(req.params.id);
 
-app.get("/api/fake-provider/verify/:txRef",(req,res)=>{
-    const txRef=req.params.txRef;
+//     const payment=payments.find(payment=>payment.id===paymentId);
 
-        console.log("Provider sent txRef:", txRef);
+//     if(!payment){
+//         res.status(404).json({
+//          message:"Payment is not found"
+//         })
+//     }
 
-        const payment=payments.find(payment=>payment.txRef===txRef);
-
-         if (!payment) {
-        return res.status(404).json({
-            message: "Payment not found"
-        });
-    }
-
-    res.json({
-        txRef: payment.txRef,
-        amount: payment.amount,
-        currency: payment.currency,
-        status: "success"
-    });
-
-})
+//     payment.status = "paid";
 
 
-const getVerifiedPayment = async ({ data }) => {
+//     res.status(200).json({
+//         id:paymentId,
+//         amount:payment.amount,
+//         currency:payment.currency,
+//         status:"success"
+//     })
+// })
 
-    const payment = payments.find(
-        payment => payment.txRef === data.txRef
-    );
+// app.get("/api/fake-provider/verify/:txRef",(req,res)=>{
+//     const txRef=req.params.txRef;
 
-    if (!payment) {
-        throw new Error("Payment not found");
-    }
+//         console.log("Provider sent txRef:", txRef);
 
-    if (payment.amount !== data.amount) {
-        throw new Error("Payment amount does not match");
-    }
+//         const payment=payments.find(payment=>payment.txRef===txRef);
 
-    if (payment.currency !== data.currency) {
-        throw new Error("Payment currency does not match");
-    }
+//          if (!payment) {
+//         return res.status(404).json({
+//             message: "Payment not found"
+//         });
+//     }
 
-    if (data.status !== "success") {
-        throw new Error("Payment was not successful");
-    }
+//     res.json({
+//         txRef: payment.txRef,
+//         amount: payment.amount,
+//         currency: payment.currency,
+//         status: "success"
+//     });
 
-    payment.status = "paid";
+// })
 
-    return payment;
-};
 
-app.get("/api/payments/:txRef/verify", async (req, res) => {
-    try {
-        const txRef = req.params.txRef;
+// const getVerifiedPayment = async ({ data }) => {
 
-        const payment = payments.find(
-            payment => payment.txRef === txRef
-        );
+//     const payment = payments.find(
+//         payment => payment.txRef === data.txRef
+//     );
 
-        if (!payment) {
-            return res.status(404).json({
-                message: "Payment not found"
-            });
-        }
+//     if (!payment) {
+//         throw new Error("Payment not found");
+//     }
 
-        const providerResponse = {
-            txRef: payment.txRef,
-            amount: payment.amount,
-            currency: payment.currency,
-            status: "success"
-        };
+//     if (payment.amount !== data.amount) {
+//         throw new Error("Payment amount does not match");
+//     }
 
-        const verifiedPayment = await getVerifiedPayment({
-            data: providerResponse
-        });
+//     if (payment.currency !== data.currency) {
+//         throw new Error("Payment currency does not match");
+//     }
 
-        res.json({
-            message: "Payment verified successfully",
-            payment: verifiedPayment
-        });
+//     if (data.status !== "success") {
+//         throw new Error("Payment was not successful");
+//     }
 
-    } catch (error) {
-        res.status(400).json({
-            message: error.message
-        });
-    }
-});
+//     payment.status = "paid";
+
+//     return payment;
+// };
+
+// app.get("/api/payments/:txRef/verify", async (req, res) => {
+//     try {
+//         const txRef = req.params.txRef;
+
+//         const payment = payments.find(
+//             payment => payment.txRef === txRef
+//         );
+
+//         if (!payment) {
+//             return res.status(404).json({
+//                 message: "Payment not found"
+//             });
+//         }
+
+//         const providerResponse = {
+//             txRef: payment.txRef,
+//             amount: payment.amount,
+//             currency: payment.currency,
+//             status: "success"
+//         };
+
+//         const verifiedPayment = await getVerifiedPayment({
+//             data: providerResponse
+//         });
+
+//         res.json({
+//             message: "Payment verified successfully",
+//             payment: verifiedPayment
+//         });
+
+//     } catch (error) {
+//         res.status(400).json({
+//             message: error.message
+//         });
+//     }
+// });
 // const getVerifiedPayment=async({data})=>{
  
 //     const payment=payments.find(payment=>payment.txRef===data.txRef);

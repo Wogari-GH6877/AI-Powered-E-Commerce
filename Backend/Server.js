@@ -385,6 +385,6 @@ app.get("/api/payments/:txRef/verify", async (req, res) => {
 //     data: req.query,
 //   });
 // });
-app.listen(Port,()=>{
+app.listen(Port,"0.0.0.0",()=>{
  console.log(`The Server is Listening at Port ${Port}`)
 })

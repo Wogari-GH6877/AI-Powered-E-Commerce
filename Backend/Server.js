@@ -12,10 +12,11 @@ import aiRouter from "./Routes/ai.route.js";
 import crypto from "crypto";
 
 
-const payments=[];
+// const payments=[];
 // App Config
 const app=express();
-const Port= 3000;
+// const Port= 3000;
+const Port = process.env.PORT || 3000;
 connectDB()
 
 
@@ -23,9 +24,9 @@ connectDB()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: ["http://localhost:5177","http://localhost:5174","http://localhost:5173",
+    origin: ["http://localhost:5177","http://localhost:5174","http://localhost:5173","https://ai-powered-e-commerce-roan.vercel.app/","https://ai-powered-e-commerce-2ias.vercel.app/"
         
-    process.env.FRONTEND_URL,process.env.ADMIN_URL],
+    ,process.env.FRONTEND_URL,process.env.ADMIN_URL],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));

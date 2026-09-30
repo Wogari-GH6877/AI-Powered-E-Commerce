@@ -11,7 +11,7 @@ function ListProduct() {
 
   const removeItems=async(id)=>{
     try {
-      console.log(id)
+      // console.log(id)
       const response=await axios.post(backendUrl + "/api/product/remove",{id});
       if(response.data.success){
         toast.success(response.data.message);

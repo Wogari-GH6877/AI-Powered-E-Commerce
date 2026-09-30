@@ -62,7 +62,7 @@ const response = await axios.post(
       setImage3(false)
       setImage4(false)
 
-      console.log(response.data)
+      // console.log(response.data)
 
 
     }else{
@@ -72,7 +72,7 @@ const response = await axios.post(
       
     } catch (error) {
 
-      console.log(error.response.data)
+      // console.log(error.response.data)
       toast.error(error.response.data.message)
       
     }

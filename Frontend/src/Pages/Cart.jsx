@@ -35,10 +35,10 @@ const Cart = () => {
 
       }
         
-      console.log(cartData)
+      // console.log(cartData)
         
-      console.log(products)
-      console.log(cartItems)
+      // console.log(products)
+      // console.log(cartItems)
     }, [cartItems,products]);
 
     // return statement for the component goes here...

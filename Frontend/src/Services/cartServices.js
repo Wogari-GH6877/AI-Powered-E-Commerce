@@ -11,7 +11,7 @@ export const cartServices={
            
                  
                 const response=await api.post("/api/cart/add",{itemId,size});
-                console.log(response)
+                // console.log(response)
 
                 return response;
 
@@ -35,7 +35,7 @@ export const cartServices={
                 
                      
                     const response=await api.get("/api/cart/get");
-                    console.log(response)
+                    // console.log(response)
     
                     return response;
     

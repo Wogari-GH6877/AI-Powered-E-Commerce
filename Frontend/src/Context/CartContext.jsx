@@ -43,13 +43,13 @@ export const CartContextProvider=({children})=>{
             try {
                  
                 const response=await cartServices.addItemToCart(itemId,size,token);
-                console.log(response)
+                // console.log(response)
 
                 if(response.data.success)
                     {toast.success(response.data.message)}
 //                
             } catch (error) {
-                console.log(error.message);
+                // console.log(error.message);
                toast.error(error.response.data.message)
                 
             }

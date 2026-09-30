@@ -40,6 +40,10 @@ export const createPayment = async (req, res) => {
         const txRef = `ORDER-${Date.now()}-${crypto.randomBytes(6).toString("hex")}`;
         const address = { ...req.body.address, phone: normalizeEthiopianPhone(req.body.address?.phone) };
         const order = await createOrderFromCart(req.user.id, address, "Chapa", txRef);
+
+        console.log("CHAPA_RETURN_URL:", process.env.CHAPA_RETURN_URL);
+console.log("Generated return URL:", chapaReturnUrl(txRef));
+console.log("Generated callback URL:", chapaCallbackUrl());
         const chapaResponse = await initializePayment({
             amount: String(order.amount),
             currency: "ETB",

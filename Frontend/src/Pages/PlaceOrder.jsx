@@ -52,7 +52,7 @@ export default function PlaceOrder() {
       // const checkoutUrl = response.data.checkoutUrl;
             const checkoutUrl = response?.data?.checkoutUrl;
 
-console.log("Checkout URL:", checkoutUrl);
+// console.log("Checkout URL:", checkoutUrl);
 
 if (!response?.data?.success || !checkoutUrl) {
     toast.error(
